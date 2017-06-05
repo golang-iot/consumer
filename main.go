@@ -64,7 +64,8 @@ func main() {
 	cluster := gocql.NewCluster(os.Getenv("CASSANDRA_HOST"))
 	cluster.Keyspace = "demo"
 	cluster.Consistency = gocql.LocalOne
-	session, _ := cluster.CreateSession()
+	session, err := cluster.CreateSession()
+	failOnError(err, "Could not connect to Cassandra")
 	
 	s3 := aws.S3Manager{}
 	s3.Init(os.Getenv("AWS_ACCESS_KEY_ID"),os.Getenv("AWS_SECRET_ACCESS_KEY"),"",os.Getenv("AWS_REGION"))
