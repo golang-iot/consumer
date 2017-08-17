@@ -21,7 +21,7 @@ func failOnError(err error, msg string) {
 }
 
 func init() {
-	log.Printf("Init")
+	log.Printf("Initializing consumer...")
 	gob.Register(queue.Message{})
 }
 
@@ -63,6 +63,12 @@ func main() {
 	
 	cluster := gocql.NewCluster(os.Getenv("CASSANDRA_HOST"))
 	cluster.Keyspace = "demo"
+	
+	cluster.Authenticator = gocql.PasswordAuthenticator{
+		Username: os.Getenv("CASSANDRA_USER"),
+		Password: os.Getenv("CASSANDRA_PASSWORD"),
+	}
+	
 	cluster.Consistency = gocql.LocalOne
 	session, err := cluster.CreateSession()
 	failOnError(err, "Could not connect to Cassandra")
@@ -83,6 +89,7 @@ func main() {
 		chunkCount := make(map[string]int)
 	
 		for fc := range chunks {
+			log.Printf("Chunk")
 			m := queue.ChunkFromGOB64(string(fc.Body))
 			//log.Printf("File chunk for %s: %d of %d: %s", m.Name, m.Current, m.Total, md5.Sum(m.Content))
 			
@@ -151,6 +158,7 @@ func main() {
 		}
 	}()
 
+	log.Printf(" Consumer initialized")
 	log.Printf(" [*] Waiting for queue.Messages. To exit press CTRL+C")
 	<-forever
 }
