@@ -49,6 +49,8 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
+	log.Printf("Connecting to RabbitMQ: "+os.Getenv("RABBITMQ_HOST"))
+	
 	deviceId := int64(1)
 	que := queue.Queue{}
 	que.Init(os.Getenv("RABBITMQ_HOST"))
@@ -60,6 +62,8 @@ func main() {
 	
 	msgs := que.Consume("hello")
 	chunks := que.Consume("images")
+	
+	log.Printf("Connecting to Cassandra: "+os.Getenv("CASSANDRA_HOST"))
 	
 	cluster := gocql.NewCluster(os.Getenv("CASSANDRA_HOST"))
 	cluster.Keyspace = "demo"
