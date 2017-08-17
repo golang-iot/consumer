@@ -21,7 +21,7 @@ func failOnError(err error, msg string) {
 }
 
 func init() {
-	log.Printf("Initializing consumer...")
+	log.Printf("Initializing consumer..")
 	gob.Register(queue.Message{})
 }
 
