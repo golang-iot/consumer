@@ -64,6 +64,7 @@ func main() {
 	chunks := que.Consume("images")
 	
 	log.Printf("Connecting to Cassandra: "+os.Getenv("CASSANDRA_HOST"))
+	log.Printf(os.Getenv("CASSANDRA_USER")+" - "+os.Getenv("CASSANDRA_PASSWORD"))
 	
 	cluster := gocql.NewCluster(os.Getenv("CASSANDRA_HOST"))
 	cluster.Keyspace = "demo"
