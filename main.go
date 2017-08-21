@@ -12,12 +12,22 @@ import (
 	"path/filepath"
 	"math/rand"
 	"github.com/joho/godotenv"
+	"encoding/json"
 )
 
 func failOnError(err error, msg string) {
 	if err != nil {
-		log.Fatalf("%s: %s", msg, err)
+		log.Fatalf("%s: %s", msg, toString(err))
 	}
+}
+
+func toString(err error){
+	out, err := json.Marshal(err)
+    if err != nil {
+        panic (err)
+    }
+
+    return string(out)
 }
 
 func init() {
