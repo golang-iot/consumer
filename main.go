@@ -25,7 +25,7 @@ func failOnError(err error, msg string) {
 func GetOutboundIP() net.IP {
     conn, err := net.Dial("udp", "8.8.8.8:80")
     if err != nil {
-        log.Fatal(err)
+        log.Fatal("Could not get the IP for this device",err)
     }
     defer conn.Close()
 
@@ -89,7 +89,7 @@ func main() {
 		Password: os.Getenv("CASSANDRA_PASSWORD"),
 	}
 	
-	cluster.Consistency = gocql.LocalOne
+	cluster.Consistency = gocql.Any
 	session, err := cluster.CreateSession()
 	failOnError(err, "Could not connect to Cassandra")
 	
