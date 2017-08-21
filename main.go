@@ -4,6 +4,7 @@ import (
 	"encoding/gob"
 	"github.com/gocql/gocql"
 	"log"
+	"net"
 	"os"
 	//"crypto/md5"
 	"time"
@@ -12,26 +13,30 @@ import (
 	"path/filepath"
 	"math/rand"
 	"github.com/joho/godotenv"
-	"encoding/json"
 )
 
 func failOnError(err error, msg string) {
 	if err != nil {
-		log.Fatalf("%s: %s", msg, toString(err))
+		log.Fatalf("%s: %+v", msg, err)
 	}
 }
 
-func toString(err error){
-	out, err := json.Marshal(err)
+// Get preferred outbound ip of this machine
+func GetOutboundIP() net.IP {
+    conn, err := net.Dial("udp", "8.8.8.8:80")
     if err != nil {
-        panic (err)
+        log.Fatal(err)
     }
+    defer conn.Close()
 
-    return string(out)
+    localAddr := conn.LocalAddr().(*net.UDPAddr)
+
+    return localAddr.IP
 }
 
+
 func init() {
-	log.Printf("Initializing consumer..")
+	log.Printf("Initializing consumer (My IP is %s)...",GetOutboundIP())
 	gob.Register(queue.Message{})
 }
 
