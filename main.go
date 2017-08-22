@@ -119,7 +119,7 @@ func main() {
 		for fc := range chunks {
 			log.Printf("Chunk")
 			m := queue.ChunkFromGOB64(string(fc.Body))
-			//log.Printf("File chunk for %s: %d of %d: %s", m.Name, m.Current, m.Total, md5.Sum(m.Content))
+			log.Printf("File chunk for %s: %d of %d: %s", m.Name, m.Current, m.Total, md5.Sum(m.Content))
 			
 			
 			if val, ok := chunkCount[m.Name]; ok {
