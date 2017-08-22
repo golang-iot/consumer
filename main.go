@@ -6,13 +6,14 @@ import (
 	"log"
 	"net"
 	"os"
-	//"crypto/md5"
+	"crypto/md5"
 	"time"
 	"github.com/golang-iot/queue"
 	"github.com/golang-iot/aws"
 	"path/filepath"
 	"math/rand"
 	"github.com/joho/godotenv"
+	"io/ioutil"
 )
 
 func failOnError(err error, msg string) {
@@ -36,7 +37,7 @@ func GetOutboundIP() net.IP {
 
 
 func init() {
-	log.Printf("Initializing consumer (My IP is %s)...",GetOutboundIP())
+	log.Printf("Initializing consumer (My IP is %s)..",GetOutboundIP())
 	gob.Register(queue.Message{})
 }
 
@@ -104,7 +105,13 @@ func main() {
 		//fileList := make(map[string]*os.File)
 		path := filepath.Clean(os.Getenv("IMGS_PATH"));
 		if _, err := os.Stat(path); os.IsNotExist(err) {
-			os.Mkdir(path, mode)
+			os.Mkdir(path, 0700)
+		}
+		
+		log.Printf("List files:")
+		files, _ := ioutil.ReadDir("~/")
+		for _, f := range files {
+				log.Println(f.Name())
 		}
 		
 		
@@ -154,7 +161,7 @@ func main() {
 				go func(){
 					faces, err := s3.SendToRekognition(filename)
 					if err != nil{
-						log.Printf("Could not upload to S3: %s",err)
+						log.Printf("Could not upload to Rekognition: %s",err)
 					}
 					saveFaces(deviceId, faces, session)
 				}()
