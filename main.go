@@ -103,6 +103,11 @@ func main() {
 	go func(){
 		//fileList := make(map[string]*os.File)
 		path := filepath.Clean(os.Getenv("IMGS_PATH"));
+		if _, err := os.Stat(path); os.IsNotExist(err) {
+			os.Mkdir(path, mode)
+		}
+		
+		
 		//os.MkdirAll(path,0777)
 		/*
 		if err != nil {
