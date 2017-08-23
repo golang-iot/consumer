@@ -103,29 +103,15 @@ func main() {
 	
 	
 	go func(){
-		//fileList := make(map[string]*os.File)
 		path := filepath.Clean(os.Getenv("IMGS_PATH"));
-		if _, err := os.Stat(path); os.IsNotExist(err) {
-			os.Mkdir(path, 0700)
-		}
-		
-		log.Printf("List files:")
 		files, _ := ioutil.ReadDir("~/")
 		for _, f := range files {
 				log.Println(f.Name())
 		}
-		
-		
-		//os.MkdirAll(path,0777)
-		/*
-		if err != nil {
-			failOnError(err, "could not create folder")
-		}*/
-	
+			
 		chunkCount := make(map[string]int)
 	
 		for fc := range chunks {
-			//log.Printf("Chunk")
 			m := queue.ChunkFromGOB64(string(fc.Body))
 			log.Printf("Received %s: %d of %d", m.Name, m.Current, m.Total)
 			
@@ -165,20 +151,26 @@ func main() {
 						log.Printf("Could not upload to Rekognition: %s",err)
 					}
 					saveFaces(deviceId, faces, session)
+					
+					
+					rand.Seed(time.Now().UTC().UnixNano())
+					
+					me := new(queue.Message)
+					me.Message = "File Received:"+m.Name
+					me.Address = rand.Intn(1000)
+					me.Created = time.Now()
+					
+					body := queue.ToGOB64(*me)
+					
+					err = que.Send("fileComplete", body)
+
+					if err != nil{
+						log.Printf("Failed to confirm image delivery: %s",err)
+					}
+					
+					
 				}()
 				
-				rand.Seed(time.Now().UTC().UnixNano())
-					
-				me := new(queue.Message)
-				me.Message = "File Received:"+m.Name
-				me.Address = rand.Intn(1000)
-				me.Created = time.Now()
-				
-				body := queue.ToGOB64(*me)
-				
-				err = que.Send("fileComplete", body)
-
-				failOnError(err, "Failed to publish a message")
 			}
 		}
 		
