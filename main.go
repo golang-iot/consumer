@@ -6,7 +6,7 @@ import (
 	"log"
 	"net"
 	"os"
-	"crypto/md5"
+	//"crypto/md5"
 	"time"
 	"github.com/golang-iot/queue"
 	"github.com/golang-iot/aws"
@@ -125,9 +125,9 @@ func main() {
 		chunkCount := make(map[string]int)
 	
 		for fc := range chunks {
-			log.Printf("Chunk")
+			//log.Printf("Chunk")
 			m := queue.ChunkFromGOB64(string(fc.Body))
-			log.Printf("File chunk for %s: %d of %d: %s", m.Name, m.Current, m.Total, md5.Sum(m.Content))
+			log.Printf("Received %s: %d of %d", m.Name, m.Current, m.Total)
 			
 			
 			if val, ok := chunkCount[m.Name]; ok {
