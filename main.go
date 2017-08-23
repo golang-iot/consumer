@@ -14,6 +14,7 @@ import (
 	"math/rand"
 	"github.com/joho/godotenv"
 	"io/ioutil"
+	"strings"
 )
 
 func failOnError(err error, msg string) {
@@ -52,7 +53,7 @@ func saveFaces(device int64, faces []aws.Face, session *gocql.Session){
 	if len(faces) > 0{
 		f := faces[0]
 		err := session.Query("INSERT INTO demo.Faces (device, maxAge, minAge, gender, genderConf, smile, smileConf, emotions, created) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", 
-														device, f.MaxAge, f.MinAge, f.Gender, f.GenderConf, f.Smile, f.SmileConf, f.Emotions, f.Created).Exec()
+														device, f.MaxAge, f.MinAge, f.Gender, f.GenderConf, f.Smile, f.SmileConf, strings.Join(f.Emotions,","), f.Created).Exec()
 		if err != nil {
 			log.Fatal(err)
 		}
